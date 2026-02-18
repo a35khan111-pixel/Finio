@@ -10,7 +10,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { AddExpenseModal } from "@/components/AddExpenseModal";
 import { PeriodPicker } from "@/components/PeriodPicker";
 import { PrivacyValue } from "@/components/PrivacyValue";
-import { Plus, Wallet, AlertTriangle, PiggyBank } from "lucide-react";
+import { Plus, Wallet, AlertTriangle, PiggyBank, TrendingUp } from "lucide-react";
 import { CATEGORY_ICONS } from "@/utils/formatters";
 
 export default function BudgetsPage() {
@@ -22,6 +22,7 @@ export default function BudgetsPage() {
     getCategorySpent,
     getPeriodLabel,
     income,
+    savingsGoal,
   } = useBudgetStore();
 
   const [budgetModalOpen, setBudgetModalOpen] = useState(false);
@@ -30,7 +31,9 @@ export default function BudgetsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const totalBudgeted = getTotalBudgeted();
-  const unbudgeted = income - totalBudgeted;
+  // Available to budget = Income minus savings goal (saved first, then budget the rest)
+  const availableToBudget = income - savingsGoal;
+  const unbudgeted = availableToBudget - totalBudgeted;
   const periodLabel = getPeriodLabel();
 
   const overBudgetCategories = categories.filter((cat) => {
@@ -115,6 +118,21 @@ export default function BudgetsPage() {
       {/* Summary bar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 bg-white dark:bg-slate-800/60 rounded-2xl p-6 border border-slate-200/80 dark:border-slate-700/60">
+          {/* Savings-first summary */}
+          {savingsGoal > 0 && (
+            <div className="flex items-center gap-2 mb-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-xl px-4 py-2.5">
+              <PiggyBank className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="text-sm text-emerald-700 dark:text-emerald-300">
+                <PrivacyValue>{formatCurrency(savingsGoal)}</PrivacyValue> saved first
+              </span>
+              <span className="text-slate-400 mx-1">·</span>
+              <TrendingUp className="w-4 h-4 text-indigo-500 shrink-0" />
+              <span className="text-sm text-slate-600 dark:text-slate-300">
+                <PrivacyValue>{formatCurrency(availableToBudget)}</PrivacyValue> available to budget
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">
@@ -123,7 +141,7 @@ export default function BudgetsPage() {
               <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">
                 <PrivacyValue>{formatCurrency(totalBudgeted)}</PrivacyValue>{" "}
                 <span className="text-sm font-normal text-slate-400">
-                  / <PrivacyValue>{formatCurrency(income)}</PrivacyValue>
+                  / <PrivacyValue>{formatCurrency(availableToBudget)}</PrivacyValue>
                 </span>
               </p>
             </div>
@@ -145,15 +163,15 @@ export default function BudgetsPage() {
           </div>
 
           <ProgressBar
-            value={getPercentage(totalBudgeted, income)}
-            exceeded={totalBudgeted > income}
+            value={getPercentage(totalBudgeted, availableToBudget)}
+            exceeded={totalBudgeted > availableToBudget}
             height="h-3"
           />
 
           <div className="mt-5 space-y-2.5">
             {categoriesWithBudget.slice(0, 5).map((cat) => {
               const budget = getCategoryBudget(cat.id);
-              const pct = income > 0 ? (budget / income) * 100 : 0;
+              const pct = availableToBudget > 0 ? (budget / availableToBudget) * 100 : 0;
               const spent = getCategorySpent(cat.id);
               return (
                 <div key={cat.id} className="flex items-center gap-3">

@@ -221,6 +221,7 @@ export default function PortfolioPage() {
     deleteAsset,
     deleteLiability,
     takeSnapshot,
+    refreshStockPrices,
   } = usePortfolioStore();
 
   const [assetModalOpen, setAssetModalOpen] = useState(false);
@@ -229,6 +230,19 @@ export default function PortfolioPage() {
   const [editLiability, setEditLiability] = useState<Liability | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshResult, setRefreshResult] = useState<{ updated: number; errors: string[] } | null>(null);
+
+  const stockAssetCount = assets.filter((a) => a.ticker && a.shares && a.shares > 0).length;
+
+  async function handleRefreshPrices() {
+    setRefreshing(true);
+    setRefreshResult(null);
+    const result = await refreshStockPrices();
+    setRefreshing(false);
+    setRefreshResult(result);
+    setTimeout(() => setRefreshResult(null), 5000);
+  }
 
   const totalAssets = getTotalAssets();
   const totalLiabilities = getTotalLiabilities();
@@ -282,7 +296,19 @@ export default function PortfolioPage() {
             Your complete financial picture
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Refresh stock prices */}
+          {stockAssetCount > 0 && (
+            <button
+              onClick={handleRefreshPrices}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-3 py-2 border border-indigo-200 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-60"
+              title="Refresh stock prices from Yahoo Finance"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+              {refreshing ? "Refreshing…" : "Live Prices"}
+            </button>
+          )}
           <button
             onClick={() => takeSnapshot()}
             className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm"
@@ -313,6 +339,20 @@ export default function PortfolioPage() {
           </button>
         </div>
       </div>
+
+      {/* Stock refresh result */}
+      {refreshResult && (
+        <div className={`mb-4 flex items-center gap-3 rounded-xl px-4 py-3 text-sm ${
+          refreshResult.errors.length > 0
+            ? "bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400"
+            : "bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+        }`}>
+          <RefreshCw className="w-4 h-4 shrink-0" />
+          {refreshResult.errors.length === 0
+            ? `Updated ${refreshResult.updated} stock price${refreshResult.updated !== 1 ? "s" : ""} from Yahoo Finance`
+            : `Updated ${refreshResult.updated}, errors: ${refreshResult.errors.join(", ")}`}
+        </div>
+      )}
 
       {/* Net Worth Hero */}
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 rounded-2xl p-8 mb-6 overflow-hidden shadow-2xl">

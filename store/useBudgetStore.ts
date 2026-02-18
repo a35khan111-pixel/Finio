@@ -42,6 +42,7 @@ export interface BudgetStore {
   budgets: Budget[];
   expenses: Expense[];
   income: number;
+  savingsGoal: number;
   periodMode: PeriodMode;
   periodStart: string;
   periodEnd: string;
@@ -70,6 +71,7 @@ export interface BudgetStore {
 
   // Settings
   setIncome: (amount: number) => void;
+  setSavingsGoal: (amount: number) => void;
   setPeriodMode: (mode: PeriodMode) => void;
   setMonthlyPeriod: (yearMonth: string) => void;
   setCustomPeriod: (start: string, end: string) => void;
@@ -90,6 +92,7 @@ export interface BudgetStore {
   getBudgetHealthScore: () => number;
 }
 
+// Savings is now a first-allocation from income, not an expense category
 const DEFAULT_CATEGORIES_SEED = [
   { name: "Housing", color: "#6366f1", icon: "home" },
   { name: "Food & Dining", color: "#f59e0b", icon: "utensils" },
@@ -98,7 +101,7 @@ const DEFAULT_CATEGORIES_SEED = [
   { name: "Health", color: "#ef4444", icon: "heart" },
   { name: "Shopping", color: "#8b5cf6", icon: "shopping-bag" },
   { name: "Utilities", color: "#06b6d4", icon: "zap" },
-  { name: "Savings", color: "#22c55e", icon: "piggy-bank" },
+  { name: "Personal Care", color: "#f97316", icon: "sparkles" },
 ];
 
 const today = new Date();
@@ -125,6 +128,7 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
   budgets: [],
   expenses: [],
   income: 5000,
+  savingsGoal: 0,
   periodMode: "monthly",
   periodStart: defaultStart,
   periodEnd: defaultEnd,
@@ -199,6 +203,7 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
       budgets,
       expenses,
       income: s ? parseFloat(String(s.income)) : 5000,
+      savingsGoal: s?.savings_goal ? parseFloat(String(s.savings_goal)) : 0,
       periodMode: (s?.period_mode ?? "monthly") as PeriodMode,
       periodStart: s?.period_start ?? defaultStart,
       periodEnd: s?.period_end ?? defaultEnd,
@@ -214,6 +219,7 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
       budgets: [],
       expenses: [],
       income: 5000,
+      savingsGoal: 0,
       periodMode: "monthly",
       periodStart: defaultStart,
       periodEnd: defaultEnd,
@@ -325,6 +331,12 @@ export const useBudgetStore = create<BudgetStore>()((set, get) => ({
     set({ income: amount });
     const { userId } = get();
     if (userId) syncSettings(userId, { income: amount });
+  },
+
+  setSavingsGoal: (amount) => {
+    set({ savingsGoal: amount });
+    const { userId } = get();
+    if (userId) syncSettings(userId, { savings_goal: amount });
   },
 
   toggleDarkMode: () => {

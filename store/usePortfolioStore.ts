@@ -79,6 +79,9 @@ export interface PortfolioStore {
   // Snapshots
   takeSnapshot: () => Promise<void>;
 
+  // Stock prices
+  refreshStockPrices: () => Promise<{ updated: number; errors: string[] }>;
+
   // Computed
   getTotalAssets: () => number;
   getTotalLiabilities: () => number;
@@ -342,6 +345,62 @@ export const usePortfolioStore = create<PortfolioStore>()((set, get) => ({
       },
       { onConflict: "user_id,date" }
     );
+  },
+
+  // ─── Stock Prices ────────────────────────────────────────────────────────────
+
+  refreshStockPrices: async () => {
+    const { assets, userId } = get();
+    const stockAssets = assets.filter((a) => a.ticker && a.shares && a.shares > 0);
+    if (stockAssets.length === 0) return { updated: 0, errors: [] };
+
+    const tickerSet: Record<string, true> = {};
+    stockAssets.forEach((a) => { tickerSet[a.ticker!] = true; });
+    const tickers = Object.keys(tickerSet);
+    const errors: string[] = [];
+    let updated = 0;
+
+    try {
+      const res = await fetch(`/api/stock-price?symbols=${tickers.join(",")}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error);
+
+      const client = (await import("@/lib/supabase/client")).createClient();
+
+      for (const asset of stockAssets) {
+        const quote = data[asset.ticker!];
+        if (!quote) { errors.push(`No data for ${asset.ticker}`); continue; }
+
+        const newValue = quote.price * asset.shares!;
+        const newPricePerShare = quote.price;
+
+        // Update local state
+        set((s) => ({
+          assets: s.assets.map((a) =>
+            a.id === asset.id
+              ? { ...a, value: newValue, pricePerShare: newPricePerShare, updatedAt: new Date().toISOString() }
+              : a
+          ),
+        }));
+
+        // Sync to Supabase
+        if (userId) {
+          await client
+            .from("assets")
+            .update({ value: newValue, price_per_share: newPricePerShare, updated_at: new Date().toISOString() })
+            .eq("id", asset.id);
+        }
+        updated++;
+      }
+
+      if (updated > 0) await get().takeSnapshot();
+    } catch (err) {
+      errors.push(err instanceof Error ? err.message : "Unknown error");
+    }
+
+    return { updated, errors };
   },
 
   // ─── Computed ────────────────────────────────────────────────────────────────

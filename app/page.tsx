@@ -20,6 +20,8 @@ import {
   Plus,
   ArrowRight,
   RefreshCw,
+  Pencil,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { Expense } from "@/store/useBudgetStore";
@@ -27,7 +29,9 @@ import { Expense } from "@/store/useBudgetStore";
 export default function Dashboard() {
   const {
     income,
+    savingsGoal,
     setIncome,
+    setSavingsGoal,
     archiveCurrentPeriod,
     getTotalBudgeted,
     getTotalSpent,
@@ -41,12 +45,16 @@ export default function Dashboard() {
   const [editExpense, setEditExpense] = useState<Expense | null>(null);
   const [editingIncome, setEditingIncome] = useState(false);
   const [incomeInput, setIncomeInput] = useState(income.toString());
+  const [editingSavings, setEditingSavings] = useState(false);
+  const [savingsInput, setSavingsInput] = useState(savingsGoal.toString());
   const [archiveConfirm, setArchiveConfirm] = useState(false);
 
   const totalBudgeted = getTotalBudgeted();
   const totalSpent = getTotalSpent();
-  const remaining = income - totalSpent;
-  const savingsRate = income > 0 ? ((income - totalSpent) / income) * 100 : 0;
+  // Income flow: Income → Savings Allocation → Available to Budget → Expenses
+  const availableToBudget = income - savingsGoal;
+  const remaining = availableToBudget - totalSpent;
+  const savingsRate = income > 0 ? (savingsGoal / income) * 100 : 0;
   const spendPercent = getPercentage(totalSpent, totalBudgeted);
   const periodLabel = getPeriodLabel();
 
@@ -88,62 +96,136 @@ export default function Dashboard() {
       </div>
 
       {/* Income Banner */}
-      <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-indigo-500/20">
-        <div>
-          <p className="text-indigo-200 text-sm font-medium mb-1">Monthly Income</p>
-          {editingIncome ? (
-            <div className="flex items-center gap-2">
-              <span className="text-white font-bold text-2xl">$</span>
-              <input
-                type="number"
-                value={incomeInput}
-                onChange={(e) => setIncomeInput(e.target.value)}
-                onBlur={() => {
-                  const val = parseFloat(incomeInput);
-                  if (!isNaN(val) && val >= 0) setIncome(val);
-                  setEditingIncome(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+      <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-6 mb-6 shadow-xl shadow-indigo-500/20">
+        {/* Top row: Income + Savings Goal */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+          <div>
+            <p className="text-indigo-200 text-xs font-medium mb-1 uppercase tracking-wide">Monthly Income</p>
+            {editingIncome ? (
+              <div className="flex items-center gap-2">
+                <span className="text-white font-bold text-2xl">$</span>
+                <input
+                  type="number"
+                  value={incomeInput}
+                  onChange={(e) => setIncomeInput(e.target.value)}
+                  onBlur={() => {
                     const val = parseFloat(incomeInput);
                     if (!isNaN(val) && val >= 0) setIncome(val);
                     setEditingIncome(false);
-                  }
-                }}
-                className="bg-white/20 text-white font-bold text-2xl w-36 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50"
-                autoFocus
-              />
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const val = parseFloat(incomeInput);
+                      if (!isNaN(val) && val >= 0) setIncome(val);
+                      setEditingIncome(false);
+                    }
+                  }}
+                  className="bg-white/20 text-white font-bold text-2xl w-36 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <button
+                onClick={() => { setIncomeInput(income.toString()); setEditingIncome(true); }}
+                className="flex items-center gap-2 text-white font-bold text-2xl hover:text-white/80 transition-colors group"
+              >
+                <PrivacyValue>{formatCurrency(income)}</PrivacyValue>
+                <Pencil className="w-3.5 h-3.5 opacity-0 group-hover:opacity-60 transition-opacity" />
+              </button>
+            )}
+          </div>
+
+          {/* Savings Goal */}
+          <div className="bg-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
+            <PiggyBank className="w-5 h-5 text-emerald-300 shrink-0" />
+            <div>
+              <p className="text-indigo-200 text-xs font-medium uppercase tracking-wide">Savings Goal</p>
+              {editingSavings ? (
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-white font-bold">$</span>
+                  <input
+                    type="number"
+                    value={savingsInput}
+                    onChange={(e) => setSavingsInput(e.target.value)}
+                    onBlur={() => {
+                      const val = parseFloat(savingsInput);
+                      if (!isNaN(val) && val >= 0) setSavingsGoal(val);
+                      setEditingSavings(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const val = parseFloat(savingsInput);
+                        if (!isNaN(val) && val >= 0) setSavingsGoal(val);
+                        setEditingSavings(false);
+                      }
+                    }}
+                    className="bg-white/20 text-white font-bold w-28 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
+                    autoFocus
+                  />
+                  <button onClick={() => { const val = parseFloat(savingsInput); if (!isNaN(val) && val >= 0) setSavingsGoal(val); setEditingSavings(false); }}>
+                    <Check className="w-3.5 h-3.5 text-emerald-300" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setSavingsInput(savingsGoal.toString()); setEditingSavings(true); }}
+                  className="flex items-center gap-1.5 group mt-0.5"
+                >
+                  <span className="text-emerald-300 font-bold text-sm">
+                    <PrivacyValue>{formatCurrency(savingsGoal)}</PrivacyValue>
+                  </span>
+                  <Pencil className="w-3 h-3 text-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              )}
             </div>
-          ) : (
-            <button
-              onClick={() => {
-                setIncomeInput(income.toString());
-                setEditingIncome(true);
-              }}
-              className="text-white font-bold text-2xl hover:text-white/80 transition-colors"
-            >
-              <PrivacyValue>{formatCurrency(income)}</PrivacyValue>
-              <span className="text-indigo-200 text-xs ml-2 font-normal">Click to edit</span>
-            </button>
-          )}
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-          <div className="text-right">
-            <p className="text-indigo-200 text-xs font-medium mb-0.5">Spent</p>
-            <p className="text-white font-bold text-lg">
+
+        {/* Income flow bar */}
+        <div className="mb-4">
+          <div className="flex h-3 rounded-full overflow-hidden bg-white/10">
+            {/* Savings slice */}
+            {income > 0 && savingsGoal > 0 && (
+              <div
+                className="bg-emerald-400 h-full transition-all duration-500"
+                style={{ width: `${Math.min(100, (savingsGoal / income) * 100)}%` }}
+                title={`Savings: ${formatCurrency(savingsGoal)}`}
+              />
+            )}
+            {/* Spent slice */}
+            {income > 0 && totalSpent > 0 && (
+              <div
+                className="bg-amber-400 h-full transition-all duration-500"
+                style={{ width: `${Math.min(100, (totalSpent / income) * 100)}%` }}
+                title={`Spent: ${formatCurrency(totalSpent)}`}
+              />
+            )}
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-xs text-indigo-200">
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Savings <PrivacyValue>{formatCurrency(savingsGoal)}</PrivacyValue></span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />Spent <PrivacyValue>{formatCurrency(totalSpent)}</PrivacyValue></span>
+            <span className="flex items-center gap-1.5 ml-auto"><span className="w-2 h-2 rounded-full bg-white/30 inline-block" />Remaining <PrivacyValue>{formatCurrency(Math.max(0, remaining))}</PrivacyValue></span>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-white/10 rounded-xl px-3 py-2.5 text-center">
+            <p className="text-indigo-200 text-xs font-medium">Available to Budget</p>
+            <p className="text-white font-bold mt-0.5">
+              <PrivacyValue>{formatCurrency(availableToBudget)}</PrivacyValue>
+            </p>
+          </div>
+          <div className="bg-white/10 rounded-xl px-3 py-2.5 text-center">
+            <p className="text-indigo-200 text-xs font-medium">Spent This Period</p>
+            <p className="text-white font-bold mt-0.5">
               <PrivacyValue>{formatCurrency(totalSpent)}</PrivacyValue>
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-indigo-200 text-xs font-medium mb-0.5">Remaining</p>
-            <p className={`font-bold text-lg ${remaining < 0 ? "text-red-300" : "text-emerald-300"}`}>
-              <PrivacyValue>{formatCurrency(remaining)}</PrivacyValue>
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-indigo-200 text-xs font-medium mb-0.5">Savings Rate</p>
-            <p className={`font-bold text-lg ${savingsRate < 0 ? "text-red-300" : "text-emerald-300"}`}>
-              <PrivacyValue>{Math.max(0, savingsRate).toFixed(1)}%</PrivacyValue>
+          <div className="bg-white/10 rounded-xl px-3 py-2.5 text-center">
+            <p className="text-indigo-200 text-xs font-medium">Savings Rate</p>
+            <p className={`font-bold mt-0.5 ${savingsRate >= 20 ? "text-emerald-300" : "text-white"}`}>
+              <PrivacyValue>{savingsRate.toFixed(1)}%</PrivacyValue>
             </p>
           </div>
         </div>
@@ -181,15 +263,15 @@ export default function Dashboard() {
           subtitle={totalBudgeted > 0 ? `${100 - spendPercent}% remaining` : "Set budgets to track"}
         />
         <MetricCard
-          title="Savings This Period"
-          value={formatCurrency(Math.max(0, remaining))}
+          title="Savings Goal"
+          value={formatCurrency(savingsGoal)}
           icon={PiggyBank}
-          iconColor="text-purple-600 dark:text-purple-400"
-          iconBg="bg-purple-50 dark:bg-purple-500/10"
-          subtitle={`${Math.max(0, savingsRate).toFixed(1)}% of income`}
+          iconColor="text-emerald-600 dark:text-emerald-400"
+          iconBg="bg-emerald-50 dark:bg-emerald-500/10"
+          subtitle={income > 0 ? `${savingsRate.toFixed(1)}% of income` : "Set a savings goal"}
           trend={
             income > 0
-              ? { value: `${Math.max(0, savingsRate).toFixed(0)}%`, positive: savingsRate >= 20 }
+              ? { value: `${savingsRate.toFixed(0)}%`, positive: savingsRate >= 20 }
               : undefined
           }
         />
