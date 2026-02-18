@@ -1,0 +1,47 @@
+import { NextResponse, type NextRequest } from "next/server";
+
+// Proxy Yahoo Finance symbol search to avoid CORS from the browser.
+// Returns top matching quotes for autocomplete.
+export async function GET(request: NextRequest) {
+  const q = new URL(request.url).searchParams.get("q");
+
+  if (!q || q.trim().length < 1) {
+    return NextResponse.json({ quotes: [] });
+  }
+
+  try {
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=8&newsCount=0&enableFuzzyQuery=true&enableCb=false&enableNavLinks=false`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          Accept: "application/json",
+        },
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!res.ok) {
+      return NextResponse.json({ quotes: [] });
+    }
+
+    const json = await res.json();
+    const raw: Record<string, unknown>[] = json?.quotes ?? [];
+
+    // Filter to tradeable instruments only
+    const quotes = raw
+      .filter((q) => ["Equity", "ETF", "Fund", "Cryptocurrency", "Index"].includes(q.typeDisp as string))
+      .slice(0, 8)
+      .map((q) => ({
+        symbol: q.symbol as string,
+        name: (q.shortname || q.longname || q.symbol) as string,
+        exchange: (q.exchDisp || "") as string,
+        type: (q.typeDisp || "Equity") as string,
+      }));
+
+    return NextResponse.json({ quotes });
+  } catch {
+    return NextResponse.json({ quotes: [] });
+  }
+}
