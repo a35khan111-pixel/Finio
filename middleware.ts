@@ -1,52 +1,35 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+// Lightweight middleware — checks for the Supabase session cookie without
+// importing the full @supabase/ssr client, which fails on Vercel's Edge Runtime.
+// Full session validation happens in each server component / route handler.
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isAuthRoute = pathname.startsWith("/auth");
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
+  // Supabase SSR sets a cookie named sb-<project-ref>-auth-token
+  const projectRef = "lhsmtgbixzhbggsrqbkx";
+  const cookieBase = `sb-${projectRef}-auth-token`;
 
-  // Refresh session — must be called before any redirect logic
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Support both whole-cookie and chunked-cookie formats
+  const hasSession = request.cookies.has(cookieBase) ||
+    request.cookies.has(`${cookieBase}.0`);
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");
-
-  // Not logged in and trying to access a protected route → login
-  if (!user && !isAuthRoute) {
+  // Not logged in → redirect to login (except for auth routes themselves)
+  if (!hasSession && !isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  // Logged in and hitting an auth page → redirect to dashboard
-  if (user && isAuthRoute) {
+  // Already logged in → redirect away from auth pages
+  if (hasSession && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  return NextResponse.next();
 }
 
 export const config = {
