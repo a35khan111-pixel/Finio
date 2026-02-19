@@ -164,7 +164,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
 
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+          className="w-11 h-11 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
         >
           {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
@@ -275,7 +275,7 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
                       Portfolio
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-center">
                       <p className="text-xs text-slate-400 mb-1">Assets</p>
                       <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
@@ -319,13 +319,13 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
                 <p className="text-sm text-slate-600 dark:text-slate-400 flex-1">Remove {profile.username}?</p>
                 <button
                   onClick={() => setConfirmRemove(false)}
-                  className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700"
+                  className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 min-h-[44px]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => onRemove(friend.requestId)}
-                  className="text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/30"
+                  className="text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-500/30 min-h-[44px]"
                 >
                   Remove
                 </button>

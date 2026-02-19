@@ -120,7 +120,7 @@ export default function Dashboard() {
                       setEditingIncome(false);
                     }
                   }}
-                  className="bg-white/20 text-white font-bold text-2xl w-36 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="bg-white/20 text-white font-bold text-2xl w-full max-w-[160px] rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50"
                   autoFocus
                 />
               </div>
@@ -159,7 +159,7 @@ export default function Dashboard() {
                         setEditingSavings(false);
                       }
                     }}
-                    className="bg-white/20 text-white font-bold w-28 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
+                    className="bg-white/20 text-white font-bold w-full max-w-[120px] rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm"
                     autoFocus
                   />
                   <button onClick={() => { const val = parseFloat(savingsInput); if (!isNaN(val) && val >= 0) setSavingsGoal(val); setEditingSavings(false); }}>
@@ -201,15 +201,15 @@ export default function Dashboard() {
               />
             )}
           </div>
-          <div className="flex items-center gap-4 mt-2 text-xs text-indigo-200">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-indigo-200">
             <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />Savings <PrivacyValue>{formatCurrency(savingsGoal)}</PrivacyValue></span>
             <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />Spent <PrivacyValue>{formatCurrency(totalSpent)}</PrivacyValue></span>
-            <span className="flex items-center gap-1.5 ml-auto"><span className="w-2 h-2 rounded-full bg-white/30 inline-block" />Remaining <PrivacyValue>{formatCurrency(Math.max(0, remaining))}</PrivacyValue></span>
+            <span className="flex items-center gap-1.5 sm:ml-auto"><span className="w-2 h-2 rounded-full bg-white/30 inline-block" />Remaining <PrivacyValue>{formatCurrency(Math.max(0, remaining))}</PrivacyValue></span>
           </div>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="bg-white/10 rounded-xl px-3 py-2.5 text-center">
             <p className="text-indigo-200 text-xs font-medium">Available to Budget</p>
             <p className="text-white font-bold mt-0.5">
@@ -232,7 +232,7 @@ export default function Dashboard() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <MetricCard
           title="Total Budgeted"
           value={formatCurrency(totalBudgeted)}
@@ -404,7 +404,7 @@ export default function Dashboard() {
       </div>
 
       {/* Archive / Reset */}
-      <div className="bg-white dark:bg-slate-800/60 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-800/60 rounded-2xl p-5 border border-slate-200/80 dark:border-slate-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
             Period Reset

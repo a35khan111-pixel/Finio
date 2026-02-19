@@ -100,10 +100,10 @@ function AssetRow({ asset, onEdit, onDelete, confirmDelete, setConfirmDelete }: 
         <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
           <PrivacyValue>{formatCurrency(asset.value)}</PrivacyValue>
         </p>
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(asset)}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
+            className="w-9 h-9 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
@@ -117,7 +117,7 @@ function AssetRow({ asset, onEdit, onDelete, confirmDelete, setConfirmDelete }: 
                 setTimeout(() => setConfirmDelete(null), 3000);
               }
             }}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg transition-all ${
+            className={`w-9 h-9 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg transition-all ${
               confirmDelete === asset.id
                 ? "bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
                 : "text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
@@ -178,10 +178,10 @@ function LiabilityRow({ liability, onEdit, onDelete, confirmDelete, setConfirmDe
         <p className="text-sm font-bold text-red-500 dark:text-red-400">
           <PrivacyValue>-{formatCurrency(liability.balance)}</PrivacyValue>
         </p>
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(liability)}
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
+            className="w-9 h-9 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
@@ -195,7 +195,7 @@ function LiabilityRow({ liability, onEdit, onDelete, confirmDelete, setConfirmDe
                 setTimeout(() => setConfirmDelete(null), 3000);
               }
             }}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg transition-all ${
+            className={`w-9 h-9 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg transition-all ${
               confirmDelete === liability.id
                 ? "bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400"
                 : "text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
@@ -372,7 +372,7 @@ export default function PortfolioPage() {
               <p className="text-slate-300 text-sm font-medium">Total Net Worth</p>
             </div>
             <p
-              className={`text-5xl font-bold tracking-tight mb-3 ${
+              className={`text-3xl sm:text-5xl font-bold tracking-tight mb-3 ${
                 netWorth >= 0 ? "text-white" : "text-red-400"
               }`}
             >
@@ -381,8 +381,8 @@ export default function PortfolioPage() {
               <NetWorthBadge value={netWorth} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 rounded-xl p-4 min-w-[140px]">
+            <div className="grid grid-cols-2 gap-4 w-full sm:w-auto">
+              <div className="bg-white/10 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-6 h-6 bg-emerald-500/20 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
@@ -396,7 +396,7 @@ export default function PortfolioPage() {
                   {assets.length} item{assets.length !== 1 ? "s" : ""}
                 </p>
               </div>
-              <div className="bg-white/10 rounded-xl p-4 min-w-[140px]">
+              <div className="bg-white/10 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-6 h-6 bg-red-500/20 rounded-lg flex items-center justify-center">
                     <TrendingDown className="w-3.5 h-3.5 text-red-400" />
@@ -447,7 +447,7 @@ export default function PortfolioPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           {
             label: "Cash & Bank",

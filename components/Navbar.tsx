@@ -11,8 +11,6 @@ import {
   Wallet,
   Moon,
   Sun,
-  Menu,
-  X,
   TrendingUp,
   PieChart,
   Eye,
@@ -57,6 +55,7 @@ export function Navbar() {
 
   return (
     <>
+      {/* ── Top Navbar ─────────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -92,8 +91,8 @@ export function Navbar() {
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-2">
-              <span className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full font-medium truncate max-w-[180px]">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full font-medium truncate max-w-[160px]">
                 {periodLabel}
               </span>
 
@@ -101,7 +100,7 @@ export function Navbar() {
               <button
                 onClick={togglePrivacyMode}
                 title={privacyMode ? "Show values" : "Hide values"}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 ${
+                className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 ${
                   privacyMode
                     ? "bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-500/30"
                     : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
@@ -113,16 +112,16 @@ export function Navbar() {
               {/* Dark mode toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
+                className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
               >
                 {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
-              {/* User menu */}
+              {/* User menu — desktop only */}
               <div className="relative hidden md:block">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:opacity-90 transition-opacity shadow-sm"
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white hover:opacity-90 transition-opacity shadow-sm"
                   title={userEmail ?? "Account"}
                 >
                   <User className="w-4 h-4" />
@@ -150,63 +149,107 @@ export function Navbar() {
                 )}
               </div>
 
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              {/* Mobile: sign-out button (shown in bottom sheet instead) */}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Mobile Bottom Tab Bar ──────────────────────────────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200/60 dark:border-slate-700/60 safe-area-pb">
+        <div className="flex items-stretch h-16">
+          {navItems.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
+                  active
+                    ? "text-indigo-600 dark:text-indigo-400"
+                    : "text-slate-400 dark:text-slate-500"
+                }`}
               >
-                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                <div className={`w-10 h-6 flex items-center justify-center rounded-full transition-colors ${
+                  active ? "bg-indigo-50 dark:bg-indigo-500/15" : ""
+                }`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-medium leading-none">{label}</span>
+              </Link>
+            );
+          })}
+          {/* Account tab on mobile */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
+              mobileOpen ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            <div className={`w-10 h-6 flex items-center justify-center rounded-full transition-colors ${
+              mobileOpen ? "bg-indigo-50 dark:bg-indigo-500/15" : ""
+            }`}>
+              <User className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-medium leading-none">Account</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Mobile Account Sheet ───────────────────────────────────────────────── */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex flex-col justify-end">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="relative bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl px-4 pt-4 pb-8 z-50 safe-area-pb">
+            <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-4" />
+            {userEmail && (
+              <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Signed in as</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{userEmail}</p>
+                </div>
+              </div>
+            )}
+            <div className="space-y-1 mt-2">
+              <div className="flex items-center justify-between px-2 py-3">
+                <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">Current period</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">{periodLabel}</span>
+              </div>
+              <button
+                onClick={() => { togglePrivacyMode(); }}
+                className="w-full flex items-center justify-between px-2 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                  {privacyMode ? "Show financial values" : "Hide financial values"}
+                </span>
+                {privacyMode ? <EyeOff className="w-4 h-4 text-indigo-500" /> : <Eye className="w-4 h-4 text-slate-400" />}
+              </button>
+              <button
+                onClick={toggleDarkMode}
+                className="w-full flex items-center justify-between px-2 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                  {darkMode ? "Light mode" : "Dark mode"}
+                </span>
+                {darkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-slate-400" />}
+              </button>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={handleSignOut}
+                disabled={signingOut}
+                className="w-full flex items-center gap-3 px-3 py-3.5 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                {signingOut ? "Signing out…" : "Sign out"}
               </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 flex flex-col gap-1">
-            {navItems.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    active
-                      ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                      : "text-slate-600 dark:text-slate-400"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {label}
-                </Link>
-              );
-            })}
-            <button
-              onClick={togglePrivacyMode}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 transition-all"
-            >
-              {privacyMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {privacyMode ? "Show Values" : "Hide Values"}
-            </button>
-            <div className="mt-1 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between px-4">
-              <span className="text-xs text-slate-500 dark:text-slate-400">{periodLabel}</span>
-            </div>
-            {userEmail && (
-              <div className="mt-1 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <p className="text-xs text-slate-400 px-4 mb-2 truncate">{userEmail}</p>
-                <button
-                  onClick={handleSignOut}
-                  disabled={signingOut}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 transition-all"
-                >
-                  <LogOut className="w-4 h-4" />
-                  {signingOut ? "Signing out…" : "Sign out"}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </nav>
+      )}
 
       {/* Close user menu on outside click */}
       {userMenuOpen && (

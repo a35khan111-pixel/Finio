@@ -148,10 +148,10 @@ export default function FriendsPage() {
           </div>
           <button
             onClick={() => setShowPrivacy(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500/50 text-sm font-medium transition-all shadow-sm"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-500/50 text-sm font-medium transition-all shadow-sm min-h-[44px]"
           >
-            <Shield className="w-4 h-4" />
-            Privacy Settings
+            <Shield className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">Privacy Settings</span>
           </button>
         </div>
 
@@ -167,8 +167,8 @@ export default function FriendsPage() {
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{label}</span>
+              <Icon className="w-4 h-4 shrink-0" />
+              <span className="text-xs sm:text-sm">{label}</span>
               {badge ? (
                 <span className={`w-5 h-5 text-xs rounded-full flex items-center justify-center font-bold ${tab === id ? "bg-white/20 text-white" : "bg-red-500 text-white"}`}>
                   {badge}
@@ -243,16 +243,16 @@ export default function FriendsPage() {
                         <button
                           onClick={() => handleDecline(req.id)}
                           disabled={pendingActions.has(req.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 transition-all"
+                          className="w-11 h-11 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 hover:border-red-300 dark:hover:border-red-500/40 transition-all"
                         >
-                          {pendingActions.has(req.id) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
+                          {pendingActions.has(req.id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
                         </button>
                         <button
                           onClick={() => handleAccept(req.id)}
                           disabled={pendingActions.has(req.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+                          className="w-11 h-11 flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
                         >
-                          {pendingActions.has(req.id) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                          {pendingActions.has(req.id) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
@@ -296,7 +296,7 @@ export default function FriendsPage() {
                       <button
                         onClick={() => handleCancel(req.id)}
                         disabled={pendingActions.has(req.id)}
-                        className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500/40 px-3 py-1.5 rounded-lg transition-all"
+                        className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 border border-slate-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500/40 px-4 py-2.5 rounded-lg transition-all min-h-[44px]"
                       >
                         {pendingActions.has(req.id) ? "Cancelling…" : "Cancel"}
                       </button>
@@ -397,7 +397,7 @@ export default function FriendsPage() {
                         <button
                           onClick={() => handleSendRequest(user.id)}
                           disabled={inFlight}
-                          className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-60"
+                          className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-60 min-h-[44px]"
                         >
                           {inFlight ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
                           {inFlight ? "Sending…" : "Add"}

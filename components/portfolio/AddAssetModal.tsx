@@ -253,7 +253,7 @@ export function AddAssetModal({ open, onClose, editAsset }: AddAssetModalProps) 
               {editAsset ? "Update asset details" : "Track a new asset"}
             </p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+          <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -265,7 +265,7 @@ export function AddAssetModal({ open, onClose, editAsset }: AddAssetModalProps) 
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Asset Type
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 sm:grid-cols-4 gap-2">
               {(Object.keys(ASSET_CATEGORY_META) as AssetCategory[]).map((cat) => {
                 const m = ASSET_CATEGORY_META[cat];
                 return (
@@ -406,7 +406,7 @@ export function AddAssetModal({ open, onClose, editAsset }: AddAssetModalProps) 
               )}
 
               {/* Shares + Price */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">
                     Shares / Units
@@ -481,7 +481,7 @@ export function AddAssetModal({ open, onClose, editAsset }: AddAssetModalProps) 
           </div>
 
           {/* Institution + Note */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Institution <span className="text-slate-400 font-normal">(optional)</span>
