@@ -287,44 +287,49 @@ export default function PortfolioPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Portfolio
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            Your complete financial picture
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Refresh stock prices */}
-          {stockAssetCount > 0 && (
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Portfolio
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+              Your complete financial picture
+            </p>
+          </div>
+          {/* Secondary actions top-right on mobile */}
+          <div className="flex items-center gap-2 shrink-0">
+            {stockAssetCount > 0 && (
+              <button
+                onClick={handleRefreshPrices}
+                disabled={refreshing}
+                className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-60 min-h-[44px]"
+                title="Refresh stock prices from Yahoo Finance"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+                <span className="hidden sm:inline">{refreshing ? "Refreshing…" : "Live Prices"}</span>
+              </button>
+            )}
             <button
-              onClick={handleRefreshPrices}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-3 py-2 border border-indigo-200 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-medium rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all text-sm disabled:opacity-60"
-              title="Refresh stock prices from Yahoo Finance"
+              onClick={() => takeSnapshot()}
+              className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm min-h-[44px]"
+              title="Save today's snapshot"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-              {refreshing ? "Refreshing…" : "Live Prices"}
+              <RefreshCw className="w-4 h-4" />
+              <span className="hidden sm:inline">Snapshot</span>
             </button>
-          )}
-          <button
-            onClick={() => takeSnapshot()}
-            className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm"
-            title="Save today's snapshot"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Snapshot
-          </button>
+          </div>
+        </div>
+        {/* Primary action buttons — side by side and full width on mobile */}
+        <div className="flex gap-2">
           <button
             onClick={() => {
               setEditLiability(null);
               setLiabilityModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 font-semibold rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 font-semibold rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-sm min-h-[44px]"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 shrink-0" />
             Add Liability
           </button>
           <button
@@ -332,9 +337,9 @@ export default function PortfolioPage() {
               setEditAsset(null);
               setAssetModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all text-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 transition-all text-sm min-h-[44px]"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 shrink-0" />
             Add Asset
           </button>
         </div>

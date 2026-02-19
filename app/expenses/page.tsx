@@ -31,29 +31,29 @@ export default function ExpensesPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Expenses
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
-            {periodLabel} · {expenses.length} transaction
-            {expenses.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+              Expenses
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">
+              {periodLabel} · {expenses.length} transaction
+              {expenses.length !== 1 ? "s" : ""}
+            </p>
+          </div>
           <PeriodPicker />
-          <button
-            onClick={() => {
-              setEditExpense(null);
-              setModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition-all text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Expense
-          </button>
         </div>
+        <button
+          onClick={() => {
+            setEditExpense(null);
+            setModalOpen(true);
+          }}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition-all text-sm min-h-[44px]"
+        >
+          <Plus className="w-4 h-4 shrink-0" />
+          Add Expense
+        </button>
       </div>
 
       {/* Stats */}
